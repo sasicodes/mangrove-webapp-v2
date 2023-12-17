@@ -1,7 +1,10 @@
-export function InitialInventory() {
+import { Text } from "@/components/typography/text"
+import { cn } from "@/utils"
+
+export function InitialInventory({ className }: { className?: string }) {
   return (
-    <div className="border-b">
-      <div className="max-w-8xl mx-auto px-4">toto</div>
+    <div className={cn("p-6", className)}>
+      <Text>Set initial inventory</Text>
     </div>
   )
 }

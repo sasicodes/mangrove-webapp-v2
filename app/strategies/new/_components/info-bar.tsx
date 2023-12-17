@@ -5,10 +5,11 @@ import type { Address } from "viem"
 import { TokenPair } from "@/components/token-pair"
 import { Button } from "@/components/ui/button"
 import { useTokenFromId } from "@/hooks/use-token-from-id"
+import { cn } from "@/utils"
 import { Minus, Plus } from "lucide-react"
 import { Badge } from "../../_components/badge"
 
-export function InfoBar() {
+export function InfoBar({ className }: { className?: string }) {
   const searchParams = useSearchParams()
   const market = searchParams.get("market")
   const [baseId, quoteId] = market?.split(",") ?? []
@@ -18,8 +19,8 @@ export function InfoBar() {
   // redirect to /strategies if no market is selected
   if (!(market && baseId && quoteId)) return redirect("/strategies")
   return (
-    <div className="border-b">
-      <div className="flex justify-between items-center py-6 px-4 max-w-8xl mx-auto">
+    <div className={cn("border-b", className)}>
+      <div className="flex justify-between items-center py-6 px-6 max-w-8xl mx-auto">
         <span className="flex items-center space-x-4">
           <TokenPair
             baseToken={baseToken}
