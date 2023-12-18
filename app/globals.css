@@ -60,8 +60,8 @@
     --border-width: 1px;
 
     --bar-height: 54px;
-    --history-table-height: calc(100vh - var(--book-chart-height));
     --book-chart-height: 31rem;
+    --history-table-height: calc(100vh - var(--book-chart-height));
     --history-table-content-height: calc(
       var(--history-table-height) - 16px - var(--bar-height) * 2
     );

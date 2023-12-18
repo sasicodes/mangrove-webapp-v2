@@ -42,7 +42,7 @@ export function Forms({
           </CustomTabsTrigger>
         ))}
       </CustomTabsList>
-      <ScrollArea className="h-[calc(100vh-(var(--bar-height)*3))] overflow-hidden">
+      <ScrollArea className="md:h-[calc(100vh-(var(--bar-height)*3))] md:overflow-hidden w-screen md:w-auto">
         <div className="px-4 space-y-4 mt-[24px]">
           {Object.values(FormType).map((form) => (
             <CustomTabsContent key={`${form}-content`} value={form}>

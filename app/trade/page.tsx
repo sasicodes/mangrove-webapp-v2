@@ -16,13 +16,13 @@ export default function Page() {
         <Forms />
       </section>
 
-      <section className="border-x book-and-chart">
+      <section className="border-x book-and-chart w-full overflow-hidden md:w-auto">
         <OrderBook
-          className="overflow-hidden border-r book-container"
+          className="overflow-hidden border-r book-container w-full md:w-auto md:overflow-auto max-h-[30rem] md:max-h-none"
           style={{ gridArea: "book" }}
         />
         <div
-          className="market-chart-container"
+          className="market-chart-container w-full overflow-hidden md:w-auto h-[30rem] md:h-auto"
           style={{
             gridArea: "chart",
           }}
@@ -32,17 +32,24 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="border-x border-t tables-section z-50 bg-background">
+      <section className="border-x border-t tables-section z-50 bg-background w-full overflow-hidden md:w-auto">
         <Tables />
       </section>
 
       <style jsx global>{`
         body {
           display: grid;
-          grid-template:
-            "header" var(--bar-height)
-            "main" minmax(0, 1fr);
-          overflow: hidden;
+          grid-template-rows: var(--bar-height) auto;
+          grid-template-areas:
+            "header"
+            "main";
+          width: 100vw;
+        }
+
+        @media (min-width: 768px) {
+          body {
+            height: 100vh;
+          }
         }
       `}</style>
 
@@ -50,11 +57,14 @@ export default function Page() {
         main {
           display: grid;
           grid-area: main;
-          grid-template-columns: 20.5rem minmax(0, 1fr);
-          grid-template-rows: 1fr var(--history-table-height);
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto auto auto;
           grid-template-areas:
-            "trade content"
-            "trade tables";
+            "trade"
+            "content"
+            "tables";
+          max-width: 100vw;
+          overflow-x: auto;
         }
 
         .tables-section {
@@ -68,9 +78,30 @@ export default function Page() {
         .book-and-chart {
           display: grid;
           grid-area: content;
-          grid-template-areas: "book chart";
-          grid-template-columns: 20.5rem minmax(0, 1fr);
-          grid-template-rows: var(--book-chart-height);
+          grid-template-areas: "book" "chart";
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto;
+        }
+
+        @media (min-width: 768px) {
+          main {
+            grid-template-columns: 20.5rem minmax(0, 1fr);
+            grid-template-rows: 1fr var(--history-table-height);
+            grid-template-areas:
+              "trade content"
+              "trade tables";
+          }
+
+          .book-and-chart {
+            grid-template-areas: "book chart";
+            grid-template-columns: 20.5rem minmax(0, 1fr);
+            grid-template-rows: var(--book-chart-height);
+          }
+
+          .book-container {
+            max-width: 100vw;
+            overflow-x: hidden;
+          }
         }
       `}</style>
       <style global jsx>{`
