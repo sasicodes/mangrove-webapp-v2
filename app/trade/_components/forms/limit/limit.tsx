@@ -31,6 +31,7 @@ import { TimeInForce, TimeToLiveUnit } from "./enums"
 import { useLimit } from "./hooks/use-limit"
 import type { Form } from "./types"
 import { isGreaterThanZeroValidator, sendValidator } from "./validators"
+import { Address } from "viem"
 
 export function Limit() {
   const [formData, setFormData] = React.useState<Form>()
@@ -316,7 +317,7 @@ const TradeInput = React.forwardRef<HTMLInputElement, TradeInputProps>(
             {error}
           </p>
         )}
-        {showBalance && <TokenBalance token={token} />}
+        {showBalance && <TokenBalance token={token?.address as Address} />}
       </div>
     )
   },

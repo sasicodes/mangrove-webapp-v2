@@ -25,6 +25,7 @@ import FromWalletMarketOrderDialog from "./components/from-wallet-order-dialog"
 import { useMarketForm } from "./hooks/use-market"
 import { type Form } from "./types"
 import { isGreaterThanZeroValidator, sendValidator } from "./validators"
+import { Address } from "viem"
 
 const sliderValues = [25, 50, 75, 100]
 const slippageValues = ["0.1", "0.5", "1"]
@@ -318,7 +319,7 @@ const TradeInput = React.forwardRef<HTMLInputElement, TradeInputProps>(
             {error}
           </p>
         )}
-        {showBalance && <TokenBalance token={token} />}
+        {showBalance && <TokenBalance token={token?.address as Address} />}
       </div>
     )
   },

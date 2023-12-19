@@ -4,6 +4,7 @@ import useMarket from "@/providers/market"
 import { TRADEMODE_AND_ACTION_PRESENTATION } from "../constants"
 import { TradeAction } from "../enums"
 import { useSpenderAddress } from "./use-spender-address"
+import { Address } from "viem"
 
 export function useTradeInfos(
   type: "limit" | "market",
@@ -18,7 +19,7 @@ export function useTradeInfos(
     baseToken,
     quoteToken,
   )
-  const sendTokenBalance = useTokenBalance(sendToken)
+  const sendTokenBalance = useTokenBalance(sendToken?.address as Address)
   const { data: spender } = useSpenderAddress(type)
   const { data: isInfiniteAllowance } = useIsTokenInfiniteAllowance(
     sendToken,

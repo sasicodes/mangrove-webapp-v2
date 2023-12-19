@@ -299,69 +299,86 @@ export const ERC20_ADDRESSES = {
 
 type ComputedAddresses = typeof ERC20_ADDRESSES
 
+// All possible chains
 type PossibleChains = keyof ComputedAddresses
-type ParentSymbolsForChain<TChain extends PossibleChains> =
-  ComputedAddresses[TChain][number]["parentSymbol"]
 
+// All possible parent symbols for given chain
+// if not determined then use NetworkToken["parentSymbol"]
+type ParentSymbolsForChain<TChain extends number = PossibleChains> =
+  TChain extends PossibleChains ?
+  ComputedAddresses[TChain][number]["parentSymbol"]
+  : NetworkToken["parentSymbol"]
+
+// utility types
 type Unboxed<T> = T extends (infer U)[] ? U : T
 type ConvertOrNever<T> = T extends never ? undefined : T
 
+// Get token from chain and parent symbol
+// if chain and parent symbol are not determined then use NetworkToken or undefined
 type TokenFromChainAndParentSymbol<
-  TChain extends PossibleChains,
+  TChain extends number = PossibleChains,
   TParentSymbol extends string = ParentSymbolsForChain<TChain>,
 > = TParentSymbol extends ParentSymbolsForChain<TChain>
-  ? ConvertOrNever<
+  ? TChain extends PossibleChains ? ConvertOrNever<
     Extract<
       Unboxed<ComputedAddresses[TChain]>,
       { parentSymbol: TParentSymbol }
     >
-  >
-  : undefined
+  > : (NetworkToken | undefined)
+  : (NetworkToken | undefined)
+
+function isDefinedChain(chain: number): chain is PossibleChains {
+  return chain in ERC20_ADDRESSES
+}
 
 function getTokenWithParent<
-  TChain extends PossibleChains,
+  TChain extends number = PossibleChains,
   TParentSymbol extends string = ParentSymbolsForChain<TChain>,
 >(
   chain: TChain,
   parentSymbol: TParentSymbol,
 ): TokenFromChainAndParentSymbol<TChain, TParentSymbol> {
+  if (!isDefinedChain(chain)) return undefined as TokenFromChainAndParentSymbol<TChain, TParentSymbol>;
   return ERC20_ADDRESSES[chain].find(
     (token) => token.parentSymbol === parentSymbol,
   ) as TokenFromChainAndParentSymbol<TChain, TParentSymbol>
 }
 
-type ChildSymbolsForChain<TChain extends PossibleChains> =
+const test = getTokenWithParent(137, "USDCe")
+
+type ChildSymbolsForChain<TChain extends number = PossibleChains> =
+  TChain extends PossibleChains ?
   ComputedAddresses[TChain][number]["symbol"]
+  : NetworkToken["symbol"]
 
 type TokenFromChainAndChildSymbol<
-  TChain extends PossibleChains,
+  TChain extends number = PossibleChains,
   TChildSymbol extends string = ChildSymbolsForChain<TChain>,
-> = TChildSymbol extends ChildSymbolsForChain<TChain>
-  ? ConvertOrNever<
-    Extract<Unboxed<ComputedAddresses[TChain]>, { symbol: TChildSymbol }>
-  >
-  : undefined
+> = TChain extends PossibleChains ? TChildSymbol extends ChildSymbolsForChain<TChain>
+? ConvertOrNever<
+  Extract<Unboxed<ComputedAddresses[TChain]>, { symbol: TChildSymbol }>
+>
+: NetworkToken | undefined : NetworkToken | undefined
 
 function getTokenWithChild<
-  TChain extends PossibleChains,
+  TChain extends number = PossibleChains,
   TChildSymbol extends string = ChildSymbolsForChain<TChain>,
 >(
   chain: TChain,
   childSymbol: TChildSymbol,
 ): TokenFromChainAndChildSymbol<TChain, TChildSymbol> {
+  if (!isDefinedChain(chain)) return undefined as TokenFromChainAndChildSymbol<TChain, TChildSymbol>;
   return ERC20_ADDRESSES[chain].find(
     (token) => token.symbol === childSymbol,
   ) as TokenFromChainAndChildSymbol<TChain, TChildSymbol>
 }
 
 type TokenFromChainAndSymbol<
-  TChain extends PossibleChains,
+  TChain extends number = PossibleChains,
   TSymbol extends string =
   | ParentSymbolsForChain<TChain>
   | ChildSymbolsForChain<TChain>,
-> = TokenFromChainAndParentSymbol<TChain, TSymbol> extends undefined
-  ? TokenFromChainAndChildSymbol<TChain, TSymbol>
-  : TokenFromChainAndParentSymbol<TChain, TSymbol>
+> = TokenFromChainAndParentSymbol<TChain, TSymbol> & TokenFromChainAndChildSymbol<TChain, TSymbol>
 
 export function getTokenWithSymbol<
   TChain extends PossibleChains,
@@ -377,52 +394,58 @@ export function getTokenWithSymbol<
   return result
 }
 
-type PossibleChainAddresses<TChain extends PossibleChains> =
+
+type PossibleChainAddresses<TChain extends number = PossibleChains> =
+  TChain extends PossibleChains ?
   ComputedAddresses[TChain][number]["address"]
+  : Address
 
 type TokenFromChainAndAddress<
-  TChain extends PossibleChains,
+  TChain extends number = PossibleChains,
   TAddress extends string = PossibleChainAddresses<TChain>,
 > = TAddress extends PossibleChainAddresses<TChain>
-  ? ConvertOrNever<
+  ? TChain extends PossibleChains ? ConvertOrNever<
     Extract<
       Unboxed<ComputedAddresses[TChain]>,
       { address: Lowercase<TAddress> }
     >
-  >
-  : undefined
+  > : NetworkToken | undefined
+  : NetworkToken | undefined
 
 export function getTokenFromChainAndAddress<
-  TChain extends PossibleChains,
+  TChain extends number = PossibleChains,
   TAddress extends string = PossibleChainAddresses<TChain>,
 >(chain: TChain, address: TAddress): TokenFromChainAndAddress<TChain, TAddress> {
+  if (!isDefinedChain(chain)) return undefined as TokenFromChainAndAddress<TChain, TAddress>;
   return ERC20_ADDRESSES[chain].find(
     (token) => token.address.toLowerCase() === address.toLowerCase(),
   ) as TokenFromChainAndAddress<TChain, TAddress>
 }
 
 export function getTokenDisplayedDecimals<
-  TChain extends PossibleChains,
-  TAddress extends string = PossibleChainAddresses<TChain>,
+  TChain extends number = PossibleChains,
+  TAddress extends (string | undefined) = PossibleChainAddresses<TChain>,
 >(
   chain: TChain,
   address: TAddress,
-) {
+): number {
+  if (!address) return 2;
   const token = getTokenFromChainAndAddress(chain, address)
   if (!token) return 2;
-  if ("displayedDecimals" in token) return token.displayedDecimals;
+  if ("displayedDecimals" in token) return token.displayedDecimals || 2;
   return 2;
 }
 
 export function getTokenDisplayedAsPriceDecimals<
-  TChain extends PossibleChains,
-  TAddress extends string = PossibleChainAddresses<TChain>,
+  TChain extends number = PossibleChains,
+  TAddress extends (string | undefined) = PossibleChainAddresses<TChain>,
 >(
   chain: TChain,
   address: TAddress,
-) {
+): number {
+  if (!address) return 6;
   const token = getTokenFromChainAndAddress(chain, address)
   if (!token) return 6;
-  if ("displayedAsPriceDecimals" in token) return token.displayedAsPriceDecimals;
+  if ("displayedAsPriceDecimals" in token) return token.displayedAsPriceDecimals || 2;
   return 6;
 }

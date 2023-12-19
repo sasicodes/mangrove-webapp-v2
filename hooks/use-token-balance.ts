@@ -1,8 +1,9 @@
-import { Address, useAccount, useBalance } from "wagmi"
-import type { NetworkToken } from "@/config/tokens"
+import { Address, useAccount, useBalance, useChainId } from "wagmi"
+import { getTokenDisplayedDecimals, type NetworkToken } from "@/config/tokens"
 
 export function useTokenBalance(token?: Address) {
   const { address } = useAccount()
+  const chain = useChainId()
   const { data, ...rest } = useBalance({
     address,
     token,
@@ -15,7 +16,7 @@ export function useTokenBalance(token?: Address) {
     formattedWithSymbol:
       data &&
       `${Number(data.formatted).toFixed(
-        token?.displayedDecimals,
+        getTokenDisplayedDecimals(chain, token),
       )} ${data?.symbol}`,
     ...rest,
   }

@@ -1,9 +1,8 @@
-import type { Token } from "@mangrovedao/mangrove.js"
-
 import { Skeleton } from "@/components/ui/skeleton"
 import { useTokenBalance } from "@/hooks/use-token-balance"
+import { Address } from "viem"
 
-export function TokenBalance({ token }: { token?: Token }) {
+export function TokenBalance({ token }: { token?: Address }) {
   const { formattedWithSymbol, formatted, isFetching } = useTokenBalance(token)
   return (
     <div className="flex justify-between items-center mt-2">
