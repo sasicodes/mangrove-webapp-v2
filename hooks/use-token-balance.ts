@@ -1,11 +1,11 @@
-import type { Token } from "@mangrovedao/mangrove.js"
-import { useAccount, useBalance } from "wagmi"
+import { Address, useAccount, useBalance } from "wagmi"
+import type { NetworkToken } from "@/config/tokens"
 
-export function useTokenBalance(token?: Token) {
+export function useTokenBalance(token?: Address) {
   const { address } = useAccount()
   const { data, ...rest } = useBalance({
     address,
-    token: token?.address as `0x`,
+    token,
     watch: false,
   })
 
@@ -14,7 +14,7 @@ export function useTokenBalance(token?: Token) {
     formatted: data?.formatted,
     formattedWithSymbol:
       data &&
-      `${Number(data?.formatted).toFixed(
+      `${Number(data.formatted).toFixed(
         token?.displayedDecimals,
       )} ${data?.symbol}`,
     ...rest,
