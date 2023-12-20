@@ -22,8 +22,8 @@ export function useTradeInfos(
   const sendTokenBalance = useTokenBalance(sendToken?.address as Address)
   const { data: spender } = useSpenderAddress(type)
   const { data: isInfiniteAllowance } = useIsTokenInfiniteAllowance(
-    sendToken,
-    spender,
+    sendToken?.address as Address,
+    spender as Address,
   )
 
   const fee =

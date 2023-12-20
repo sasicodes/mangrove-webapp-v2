@@ -1,15 +1,18 @@
 import type { Address } from "viem"
 
 import { TokenPair } from "@/components/token-pair"
-import { useTokenFromAddress } from "@/hooks/use-token-from-address"
+import { getTokenFromChainAndAddress } from "@/config/tokens"
+import { useChainId } from "wagmi"
 
 type Props = {
-  base: string
-  quote: string
+  base: Address
+  quote: Address
 }
 export function Market({ base, quote }: Props) {
-  const { data: baseToken } = useTokenFromAddress(base as Address)
-  const { data: quoteToken } = useTokenFromAddress(quote as Address)
+  const chain = useChainId()
+  const baseToken = getTokenFromChainAndAddress(chain, base)
+  const quoteToken = getTokenFromChainAndAddress(chain, quote)
+  if (!baseToken || !quoteToken) return null
   return (
     <div className="flex items-center space-x-2">
       <TokenPair

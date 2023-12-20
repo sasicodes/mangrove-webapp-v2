@@ -4,10 +4,11 @@ import { cn } from "@/utils"
 import { TokenIcon } from "./token-icon"
 import { Title } from "./typography/title"
 import { Skeleton } from "./ui/skeleton"
+import { NetworkToken } from "@/config/tokens"
 
 type Props = {
-  baseToken?: Token | null
-  quoteToken?: Token | null
+  baseToken?: NetworkToken
+  quoteToken?: NetworkToken
   className?: string
   tokenClasses?: string
   titleProps?: React.ComponentProps<typeof Title>
@@ -30,8 +31,8 @@ export function TokenPair({
           </>
         ) : (
           <>
-            <TokenIcon symbol={baseToken.symbol} className={tokenClasses} />
-            <TokenIcon symbol={quoteToken.symbol} className={tokenClasses} />
+            <TokenIcon symbol={baseToken.parentSymbol} className={tokenClasses} />
+            <TokenIcon symbol={quoteToken.parentSymbol} className={tokenClasses} />
           </>
         )}
       </div>
@@ -41,7 +42,7 @@ export function TokenPair({
         <Title
           variant={"header1"}
           {...titleProps}
-        >{`${baseToken.symbol}/${quoteToken.symbol}`}</Title>
+        >{`${baseToken.parentSymbol}/${quoteToken.parentSymbol}`}</Title>
       )}
     </div>
   )

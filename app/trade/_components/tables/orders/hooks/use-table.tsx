@@ -19,6 +19,9 @@ import { Close, Pen } from "@/svgs"
 import { cn } from "@/utils"
 import { Timer } from "../components/timer"
 import type { Order } from "../schema"
+import { getTokenFromChainAndAddress, NetworkToken } from "@/config/tokens"
+import { Address } from "viem"
+import { useChainId } from "wagmi"
 
 const columnHelper = createColumnHelper<Order>()
 const DEFAULT_DATA: Order[] = []
@@ -31,6 +34,10 @@ type Params = {
 
 export function useTable({ data, onRetract, onEdit }: Params) {
   const { market } = useMarket()
+  const chain = useChainId();
+
+  const baseToken = getTokenFromChainAndAddress(chain, market?.base.address as Address) as NetworkToken;
+  const quoteToken = getTokenFromChainAndAddress(chain, market?.quote.address as Address) as NetworkToken;
   const columns = React.useMemo(
     () => [
       columnHelper.display({
@@ -44,8 +51,8 @@ export function useTable({ data, onRetract, onEdit }: Params) {
                 as: "span",
               }}
               tokenClasses="w-4 h-4"
-              baseToken={market?.base}
-              quoteToken={market?.quote}
+              baseToken={baseToken}
+              quoteToken={quoteToken}
             />
           </div>
         ),

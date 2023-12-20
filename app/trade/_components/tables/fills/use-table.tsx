@@ -16,6 +16,8 @@ import useMarket from "@/providers/market"
 import { cn } from "@/utils"
 import { formatDate } from "@/utils/date"
 import type { Fill } from "./schema"
+import { Address, useChainId } from "wagmi"
+import { NetworkToken, getTokenFromChainAndAddress } from "@/config/tokens"
 
 const columnHelper = createColumnHelper<Fill>()
 const DEFAULT_DATA: Fill[] = []
@@ -28,6 +30,12 @@ type Params = {
 
 export function useTable({ data }: Params) {
   const { market } = useMarket()
+
+  const chain = useChainId();
+
+  const baseToken = getTokenFromChainAndAddress(chain, market?.base.address as Address) as NetworkToken;
+  const quoteToken = getTokenFromChainAndAddress(chain, market?.quote.address as Address) as NetworkToken;
+
   const columns = React.useMemo(
     () => [
       columnHelper.display({
@@ -41,8 +49,8 @@ export function useTable({ data }: Params) {
                 as: "span",
               }}
               tokenClasses="w-4 h-4"
-              baseToken={market?.base}
-              quoteToken={market?.quote}
+              baseToken={baseToken}
+              quoteToken={quoteToken}
             />
           </div>
         ),

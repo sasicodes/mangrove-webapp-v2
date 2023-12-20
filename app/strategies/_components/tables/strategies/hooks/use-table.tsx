@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table"
 import Link from "next/link"
 import React from "react"
-import { useNetwork } from "wagmi"
+import { Address, useNetwork } from "wagmi"
 
 import { IconButton } from "@/components/icon-button"
 import { Close, Pen } from "@/svgs"
@@ -84,7 +84,7 @@ export function useTable({ data, onCancel, onManage }: Params) {
         header: "Market",
         cell: ({ row }) => {
           const { base, quote } = row.original
-          return <Market base={base} quote={quote} />
+          return <Market base={base as Address} quote={quote as Address} />
         },
       }),
       // TODO: get from indexer

@@ -381,7 +381,7 @@ type TokenFromChainAndSymbol<
 > = TokenFromChainAndParentSymbol<TChain, TSymbol> & TokenFromChainAndChildSymbol<TChain, TSymbol>
 
 export function getTokenWithSymbol<
-  TChain extends PossibleChains,
+  TChain extends number = PossibleChains,
   TSymbol extends string =
   | ParentSymbolsForChain<TChain>
   | ChildSymbolsForChain<TChain>,
@@ -415,8 +415,8 @@ type TokenFromChainAndAddress<
 export function getTokenFromChainAndAddress<
   TChain extends number = PossibleChains,
   TAddress extends string = PossibleChainAddresses<TChain>,
->(chain: TChain, address: TAddress): TokenFromChainAndAddress<TChain, TAddress> {
-  if (!isDefinedChain(chain)) return undefined as TokenFromChainAndAddress<TChain, TAddress>;
+>(chain: TChain, address?: TAddress): TokenFromChainAndAddress<TChain, TAddress> {
+  if (!address || !isDefinedChain(chain)) return undefined as TokenFromChainAndAddress<TChain, TAddress>;
   return ERC20_ADDRESSES[chain].find(
     (token) => token.address.toLowerCase() === address.toLowerCase(),
   ) as TokenFromChainAndAddress<TChain, TAddress>
