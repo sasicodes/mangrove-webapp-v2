@@ -174,7 +174,7 @@ type RawParams = {
 }
 
 export type ConnectionParams = {
-  client: Prettify<PublicClient<HttpTransport> & WalletClient<HttpTransport>>
+  publicClient: PublicClient<HttpTransport>
   publicWebsocketClient?: PublicClient<WebSocketTransport>
   mgvReader: Address
   mgv: Address
@@ -218,7 +218,7 @@ export class SemiBook extends RawSemiBook {
     if (this.isFetching) return
     this.isFetching = true
     const [currentId, offerIds, offers, details] =
-      await this.connection.client.readContract({
+      await this.connection.publicClient.readContract({
         abi: MangroveReaderABI,
         address: this.connection.mgvReader,
         functionName: "offerList",
@@ -262,7 +262,7 @@ export class SemiBook extends RawSemiBook {
       return
     }
     const client =
-      this.connection.publicWebsocketClient ?? this.connection.client
+      this.connection.publicWebsocketClient ?? this.connection.publicClient
     const unwatchWrite = client.watchContractEvent({
       abi: MangroveABI,
       eventName: "OfferWrite",

@@ -1,4 +1,4 @@
-import { MAX_SAFE_VOLUME, MAX_TICK, MIN_TICK } from "./constants.js";
+import { MAX_SAFE_VOLUME, MAX_TICK, MIN_TICK } from "./constants";
 
 export class TickOutOfBoundsError extends RangeError {
   constructor() {

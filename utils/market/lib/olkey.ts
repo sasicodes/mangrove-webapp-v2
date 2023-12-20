@@ -5,7 +5,7 @@ import {
   keccak256,
   size,
 } from "viem";
-import { MangroveABI } from "@/config/abis/mangrove.js";
+import { MangroveABI } from "@/config/abis/mangrove";
 import { InvalidBytesLengthError } from "../errors";
 
 /**

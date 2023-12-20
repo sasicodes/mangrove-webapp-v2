@@ -33,7 +33,7 @@ export class Market extends MangroveEventTarget<MarketEvents, EventData>  {
 
   private unsubs: (() => void)[] = [];
 
-  private constructor(config: MarketBaseConfig, connection: ConnectionParams) {
+  constructor(config: MarketBaseConfig, connection: ConnectionParams) {
     super();
     const asksOlKey = config.asksOlKey;
     const bidsOlKey = asksOlKey.fliped();
@@ -47,11 +47,15 @@ export class Market extends MangroveEventTarget<MarketEvents, EventData>  {
       localConfigPromise: multicallPromise.then(res => res.bids),
     }, connection);
 
+    this.bids.connect();
+
     this.asks = new SemiBook({
       olKey: asksOlKey,
       ba: "asks",
       localConfigPromise: multicallPromise.then(res => res.asks),
     }, connection);
+
+    this.asks.connect();
 
     this.unsubs = [
       this.bids.on("offer-list-update", () => this.dispatchEvent(new CustomEvent(ON_OFFER_LIST_UPDATE, { detail: this.bids }))),
