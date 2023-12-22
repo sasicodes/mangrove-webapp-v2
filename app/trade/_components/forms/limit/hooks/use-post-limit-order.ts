@@ -6,7 +6,9 @@ import useMangrove from "@/providers/mangrove"
 import useMarket from "@/providers/market"
 import { useLoadingStore } from "@/stores/loading.store"
 import type { Market } from "@mangrovedao/mangrove.js"
-import { TradeAction } from "../../enums"
+import { TRADEMODE_AND_ACTION_PRESENTATION } from "../../constants"
+import { TradeAction, TradeMode } from "../../enums"
+import { successToast } from "../../market/utils"
 import { TimeInForce } from "../enums"
 import type { Form } from "../types"
 import { estimateTimestamp } from "../utils"
@@ -28,18 +30,24 @@ export function usePostLimitOrder({ onResult }: Props = {}) {
   return useMutation({
     mutationFn: async ({ form }: { form: Form }) => {
       if (!mangrove || !market) return
+      const { base } = market
       const {
         tradeAction,
-        send,
-        receive,
+        send: gives,
+        receive: wants,
         timeInForce,
         timeToLive,
         timeToLiveUnit,
       } = form
+
+      const [baseValue] = TRADEMODE_AND_ACTION_PRESENTATION.limit[
+        tradeAction
+      ].sendReceiveToBaseQuote(gives, wants)
+
       const isBuy = tradeAction === TradeAction.BUY
       const orderParams: Market.TradeParams = {
-        wants: receive,
-        gives: send,
+        wants,
+        gives,
         restingOrder: {},
         forceRoutingToMangroveOrder: true,
         fillOrKill: timeInForce === TimeInForce.FILL_OR_KILL,
@@ -56,6 +64,8 @@ export function usePostLimitOrder({ onResult }: Props = {}) {
         ? await market.buy(orderParams)
         : await market.sell(orderParams)
       const result = await order.result
+
+      successToast(TradeMode.LIMIT, tradeAction, base, baseValue, result)
       return { order, result }
     },
     meta: {

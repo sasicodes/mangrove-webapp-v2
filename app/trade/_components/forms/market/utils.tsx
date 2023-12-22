@@ -3,6 +3,8 @@ import Big from "big.js"
 import { toast } from "sonner"
 
 import { TokenIcon } from "@/components/token-icon"
+import { Caption } from "@/components/typography/caption"
+import { Title } from "@/components/typography/title"
 import { Separator } from "@/components/ui/separator"
 import { bsToBa } from "@/utils/market"
 import type { TradeMode } from "../enums"
@@ -15,24 +17,30 @@ export function successToast(
   baseValue: string,
   result: Market.OrderResult,
 ) {
+  const formatDecimals = (value?: Big) =>
+    value ? value.toFixed(baseToken.displayedAsPriceDecimals) : undefined
   const summary = result.summary
-  const price = result.offerWrites[0]?.offer.price.toFixed(4)
+  const price = formatDecimals(result.offerWrites[0]?.offer.price)
+  const tradeValue = formatDecimals(Big(baseValue))
   const fillText = summary.partialFill ? "Partially filled" : "Filled"
 
   toast(
-    <div className="grid gap-2 w-full">
-      <div className="flex space-x-2 items-center">
+    <div className="grid p-2 gap-2 w-full">
+      <div className="flex space-x-1 items-center">
         <TokenIcon symbol={baseToken.symbol} />
         <div className="grid">
-          <span>{tradeMode.toUpperCase()} Order</span>
-          <span className="text-muted-foreground">{fillText}</span>
+          <Title variant={"title3"}>{tradeMode.toUpperCase()} Order</Title>
+          <Caption variant={"caption2"} className="text-muted-foreground">
+            {fillText}
+          </Caption>
         </div>
       </div>
 
       <Separator />
+
       <div className="grid">
         <div className="flex justify-between">
-          <span
+          <Caption
             className={
               tradeAction === TradeAction.BUY
                 ? "text-green-500"
@@ -40,19 +48,18 @@ export function successToast(
             }
           >
             {tradeAction.toUpperCase()}
-          </span>
-          <span>
-            {Big(baseValue).toFixed(baseToken.displayedAsPriceDecimals)}{" "}
-            {baseToken.symbol}
-          </span>
+          </Caption>
+          <Caption>
+            {tradeValue} {baseToken.symbol}
+          </Caption>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground">PRICE</span>
-          <span>{price}</span>
+          <Caption className="text-muted-foreground">PRICE</Caption>
+          <Caption>$ {price ?? "-"}</Caption>
         </div>
       </div>
     </div>,
-    { duration: 5000, dismissible: true },
+    { duration: 5000 },
   )
 }
 
