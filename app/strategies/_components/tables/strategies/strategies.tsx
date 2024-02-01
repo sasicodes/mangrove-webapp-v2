@@ -4,7 +4,9 @@ import React from "react"
 import { DataTable } from "@/components/ui/data-table/data-table"
 import useMarket from "@/providers/market"
 import { useStrategies } from "./hooks/use-strategies"
-import { useTable } from "./hooks/use-table"
+import { useTable as userTables } from "./hooks/use-table"
+import { useTable } from "./hooks/use-table-all"
+
 import { MOCKS } from "./mock"
 import type { Strategy } from "./schema"
 
@@ -29,15 +31,26 @@ export function Strategies({ type }: Props) {
   // selected strategy to cancel
   const [, setStrategyToCancel] = React.useState<Strategy>()
 
-  const table = useTable({
-    type,
-    data: MOCKS,
-    onManage: () => {
-      // TODO: implement
-      console.log("manage")
-    },
-    onCancel: setStrategyToCancel,
-  })
+  const table =
+    type === "all"
+      ? useTable({
+          type,
+          data: MOCKS,
+          onManage: () => {
+            // TODO: implement
+            console.log("manage")
+          },
+          onCancel: setStrategyToCancel,
+        })
+      : userTables({
+          type,
+          data: MOCKS,
+          onManage: () => {
+            // TODO: implement
+            console.log("manage")
+          },
+          onCancel: setStrategyToCancel,
+        })
 
   return (
     <DataTable
